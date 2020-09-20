@@ -14,7 +14,8 @@ services:
             - '3306'
         volumes:
             - wtf-db:/var/lib/mysql
-#            - ./my.cnf:/etc/alternatives/my.cnf
+            - ./scripts/:/docker-entrypoint-initdb.d
+#            - ./my.cnf:/etc/my.cnf
     wtf-client:
         build:
             context: .
@@ -25,6 +26,7 @@ services:
             - 3000
         volumes:
             - ./src:/usr/src/app
+            - ./scripts:/scripts
         environment: 
             - DB_SERVER=db-server
             - DB_DATABASE=wtf
@@ -33,5 +35,6 @@ services:
             - DB_PORT=3306
         depends_on: 
             - db-server
+        command: ["sh", "-c", "startup.sh"]
 volumes:
     wtf-db:
