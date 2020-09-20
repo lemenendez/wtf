@@ -1,0 +1,37 @@
+version: '3.3'
+services:
+    db-server:
+        image: mysql/mysql-server
+        restart: always
+        environment: 
+            MYSQL_DATABASE: 'wtf'
+            MYSQL_USER: 'dev'
+            MYSQL_PASSWORD: 'password'
+            MYSQL_ROOT_PASSWORD: 'password'
+        ports:
+            - '3306:3306'
+        expose:
+            - '3306'
+        volumes:
+            - wtf-db:/var/lib/mysql
+#            - ./my.cnf:/etc/alternatives/my.cnf
+    wtf-client:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - '3000:3000'
+        expose:
+            - 3000
+        volumes:
+            - ./src:/usr/src/app
+        environment: 
+            - DB_SERVER=db-server
+            - DB_DATABASE=wtf
+            - DB_USERNAME=dev
+            - DB_PASS=password
+            - DB_PORT=3306
+        depends_on: 
+            - db-server
+volumes:
+    wtf-db:

@@ -1,0 +1,16 @@
+{
+  "name": "wtf-app",
+  "main": "server.js",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "jwt-simple": "^0.5.6",
+    "knex": "^0.21.5",
+    "morgan": "^1.10.0",
+    "mysql2": "^2.2.2"
+  }
+}
