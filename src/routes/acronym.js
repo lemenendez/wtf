@@ -1,7 +1,8 @@
 let express = require('express')
 let router = express.Router()
+let jwt = require('jwt-simple')
 
-let { find, create, update, remove, search, search2 } = require('./../database/acronym')
+let { find, create, update, remove, search, search2, findByName } = require('./../database/acronym')
 
 const BAD_REQUEST = 400
 const SUCCESS = 200
@@ -11,11 +12,15 @@ const DEFAULT_SEARCH_FROM = "0"
 const DUP = 422
 const NOT_FOUND = 404
 const SERVER_ERROR = 500
+const UNAUTHORIZED = 401
+const SUPER_SECRET = "your-256-bit-secret"
 
-// GET /acronym?from=50&limit=10&search=:search
-// returns a list of acronyms, paginated using query parameters
-// response headers indicate if there are more results
-// returns all acronyms that fuzzy match against `:search`
+/**
+ * GET /v1/acronym?from=50&limit=10&search=:search
+ * @summary Returns a list of acronyms, paginated using query parameters, response headers indicate if there are more results,returns all acronyms that fuzzy match against `:search`
+ * @tags acronym
+ * @return 
+ */
 router.get("", (req, res) => {
     let params
     params = validateSearchParams(req)
@@ -111,6 +116,26 @@ router.post("", (req,res) => {
 // updates the acronym definition to the db for `:acronym`
 router.put("/:acronym", (req, res)=> {
     let body = req.body
+    let token = req.headers['x-access-token'] || req.headers['authorization'] || ""
+    
+    if (token.startsWith('Bearer ')) {
+        // Remove Bearer from string
+        token = token.slice(7, token.length).trimLeft();
+    }
+    
+    console.log(token)
+
+    // let secret='your-256-bit-secret'
+
+    try{
+        let decoded = jwt.decode(token, SUPER_SECRET);
+        console.log(decoded); //=> { foo: 'bar' }    
+    }
+    catch(err) {
+        res.sendStatus(UNAUTHORIZED)
+        return 
+    }
+    
     //console.log('hello')
     if (body.acronym 
         && body.desc
@@ -133,8 +158,27 @@ router.put("/:acronym", (req, res)=> {
     }
 })
 
+// DELETE /acronym/:acronym`**
+// uses an authorization header to ensure acronyms are protected
 router.delete("/:acronym", (req, res)=> {
     let params = req.params
+    
+    let token = req.headers['x-access-token'] || req.headers['authorization'] || ""
+    
+    if (token.startsWith('Bearer ')) {
+        // Remove Bearer from string
+        token = token.slice(7, token.length).trimLeft();
+    }
+
+    try{
+        let decoded = jwt.decode(token, SUPER_SECRET);
+        console.log(decoded); //=> { foo: 'bar' }    
+    }
+    catch(err) {
+        res.sendStatus(UNAUTHORIZED)
+        return 
+    }
+
     console.log(params.acronym)
     if (params.acronym) {
         remove(params.acronym)
@@ -144,9 +188,7 @@ router.delete("/:acronym", (req, res)=> {
     }
     else {
         res.sendStatus(BAD_REQUEST)
-    }
-    // res.sendStatus(SUCCESS)
-    //res.send(req.body)    
+    }    
 })
 
 // validate and returns vaid parameters

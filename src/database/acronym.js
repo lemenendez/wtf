@@ -19,6 +19,10 @@ function find(name, desc) {
         .andWhere('Desc', '=', desc)
 }
 
+function findByName(name) {
+    return knex('WTF')
+        .where('Name', '=', name)
+}
 function create(name, desc) {
     return knex('WTF')
         .insert({Name:name, Desc:desc })
@@ -36,4 +40,4 @@ function remove(name) {
         .del()
 }
 
-module.exports = { find, create, update, remove, search, search2 }
+module.exports = { find, create, update, remove, search, search2, findByName }

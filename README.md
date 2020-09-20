@@ -43,7 +43,7 @@ Use this data however you like, either as a flat file, or to populate a database
 ## Running container (dev)
 
 Run the mysql container: `docker-compose run -d db-server`
-Run the app container for dev: `docker-compose run wtf-client bash`
+Run the app container for dev: `docker-compose run -p  3000:3000  wtf-client bash`
 
 ## Run all the containers
 

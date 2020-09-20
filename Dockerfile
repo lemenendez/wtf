@@ -2,8 +2,6 @@ FROM node:12
 
 RUN apt-get update
 
-# RUN apt-get install mysql-client -y
-
 WORKDIR /usr/src/app
 
 RUN mkdir /scripts
@@ -16,4 +14,9 @@ RUN npm install
 
 COPY src/ .
 
+RUN npm install swagger-jsdoc -g
+
+RUN npm i mocha -g
+
 EXPOSE 3000
+
