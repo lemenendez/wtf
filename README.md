@@ -34,7 +34,7 @@ These endpoints should be created:
 
 ## The Data
 
-Use this data however you like, either as a flat file, or to populate a database.
+Database is stored in MySql 8
 
 ## build docker images
 
@@ -43,12 +43,14 @@ Use this data however you like, either as a flat file, or to populate a database
 ## Running container (dev)
 
 Run the mysql container: `docker-compose run -d db-server`
-Run the app container for dev: `docker-compose run -p  3000:3000  wtf-client bash`
+Or Run the app container for dev: `docker-compose run -p  3000:3000  wtf-client bash`
 
 ## Run all the containers
 
 `docker-compose up -d`
 
-## run project
+## Swagger documentation
 
-docker run -it --rm -v /mnt/data/projects/interviews/wtf/:/usr/src/app wtf bash
+`http://localhost:3000/api-docs/`
+
+`http://servername:3000/api-docs`

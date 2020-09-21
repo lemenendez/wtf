@@ -1,5 +1,9 @@
 const { knex, wtf } = require('./con')
 
+function random(count) {
+    return knex('WTF')
+        .whereRaw('1 ORDER BY RAND() LIMIT ?', [count])
+}
 
 function search2(search, from=0, pageSize=50, threshold=2) {
     return knex.raw(
@@ -40,4 +44,4 @@ function remove(name) {
         .del()
 }
 
-module.exports = { find, create, update, remove, search, search2, findByName }
+module.exports = { find, create, update, remove, search, search2, findByName, random }

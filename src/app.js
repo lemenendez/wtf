@@ -3,6 +3,7 @@ const express = require('express')
 const logger = require('morgan')
 const bodyParser = require('body-parser')
 const acronymRouter = require('./routes/acronym')
+const randomRouter = require('./routes/random')
 const swaggerJSDoc = require('swagger-jsdoc');
 
 let app = express()
@@ -16,6 +17,7 @@ app.use(bodyParser.json())
 
 app.use('/api-docs', express.static('api-docs'))
 app.use('/v1/acronym', acronymRouter)
+app.use('/v1/random', randomRouter)
 
 //swagger stuff
 var swaggerDefinition = {
