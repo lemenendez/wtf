@@ -24,8 +24,8 @@ services:
             - '3000:3000'
         expose:
             - 3000
-        volumes:
-            - ./src:/usr/src/app
+#        volumes:
+#            - ./src:/usr/src/app
         environment: 
             - DB_SERVER=db-server
             - DB_DATABASE=wtf
@@ -34,7 +34,7 @@ services:
             - DB_PORT=3306
         depends_on: 
             - db-server
-        #entrypoint: ./startup.sh
+        entrypoint: ./startup.sh
 #        command: ["sh", "-c", "startup.sh"]
 volumes:
     wtf-db:
