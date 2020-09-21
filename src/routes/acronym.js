@@ -16,10 +16,36 @@ const UNAUTHORIZED = 401
 const SUPER_SECRET = "your-256-bit-secret"
 
 /**
- * GET /v1/acronym?from=50&limit=10&search=:search
- * @summary Returns a list of acronyms, paginated using query parameters, response headers indicate if there are more results,returns all acronyms that fuzzy match against `:search`
- * @tags acronym
- * @return 
+ * @swagger
+ * /v1/acronym:
+ *  get:
+ *   tags:
+ *      - acronym, search
+ *   description: Returns a list of acronyms, paginated using query parameters, response headers indicate if there are more results,returns all acronyms that fuzzy match against `:search`
+ *   produces:
+ *      - application/json
+ *   parameters:
+ *      - name: search
+ *        description: keyword to search for
+ *        required: true
+ *        type: string
+ *        in: query
+ *      - name: from
+ *        description: starting record
+ *        required: false
+ *        type: integer
+ *        in: query
+ *        minimum: 0
+ *        default: 0
+ *      - name: limit
+ *        description: page size or limit of the records to be displayed
+ *        required: false
+ *        in: query
+ *        default: 50
+ *        minimum: 1
+ *   responses:
+ *      200:
+ *          description: An array of acronyms the match the search parameter
  */
 router.get("", (req, res) => {
     let params
@@ -42,8 +68,6 @@ router.get("", (req, res) => {
             else {
                 res.sendStatus(SERVER_ERROR)
             }
-            //res.json(rows)
-            //res.sendStatus(SUCCESS)
         })        
     }
     else {
@@ -52,9 +76,24 @@ router.get("", (req, res) => {
 })
 
 
-// GET /acronym/:acronym
-// returns the acronym and definition matching `:acronym`
-
+/**
+ * @swagger
+ * /v1/acronym/{acronym}:
+ *      get:
+ *          tags:
+ *              -   acronym
+ *          description: returns the acronym and definition matching acronym parameter
+ *          produces:
+ *              - application/json
+ *          parameters:
+ *              - name: acronym
+ *                description: exact name of the acronym
+ *                required: true
+ *                in: path
+ *          responses:
+ *              200:
+ *                  description: When search was done
+ */
 router.get("/:acronym", (req, res) => {
     findByName(req.params.acronym)
     .then(row=> {
@@ -68,9 +107,36 @@ router.get("/:acronym", (req, res) => {
     })
 })
 
-// POST /acronym
-// receives an acronym and definition strings
-// adds the acronym definition to the db
+/**
+ * @swagger
+ * /v1/acronym:
+ *      post:
+ *          tags:
+ *              - acronym
+ *          summary: Adds the acronym definition to the db
+ *          produces:
+ *              - application/json
+ *          consumes:
+ *              - application/json
+ *          parameters:
+ *              - in: body
+ *                name: acronym
+ *                schema:
+ *                    type: object
+ *                    required:
+ *                      - acronym
+ *                      - desc
+ *                    properties:
+ *                          acronym:
+ *                               type: string
+ *                          desc:
+ *                               type: array
+ *                               items:
+ *                                  type: string
+ *          responses:
+ *              200:
+ *                  description: new acronym created
+ */
 router.post("", (req,res) => {
     let body = req.body
     // console.log(body)
@@ -110,10 +176,44 @@ router.post("", (req,res) => {
     }        
 })
 
-// PUT /acronym/:acronym
-// receives an acronym and definition strings
-// uses an authorization header to ensure acronyms are protected
-// updates the acronym definition to the db for `:acronym`
+/**
+ * @swagger
+ * /v1/acronym/{acronym}:
+ *      put:
+ *          tags:
+ *              - acronym
+ *          summary: Updates the acronym definition to the db for `:acronym`, It uses an authorization header to ensure acronyms are protected
+ *          produces:
+ *              - application/json
+ *          consumes:
+ *              - application/json
+ *          security:
+ *              - BearerAuth:
+ *                  type: http
+ *                  schema: bearer
+ *          parameters:
+ *              - in: header
+ *                name: authorization
+ *              - in: path
+ *                name: acronym
+ *              - in: body
+ *                name: acronym
+ *                schema:
+ *                    type: object
+ *                    required:
+ *                      - acronym
+ *                      - desc
+ *                    properties:
+ *                          acronym:
+ *                               type: string
+ *                          desc:
+ *                               type: array
+ *                               items:
+ *                                  type: string
+ *          responses:
+ *              200:
+ *                  description: acronym definitions are updated
+ */
 router.put("/:acronym", (req, res)=> {
     let body = req.body
     let token = req.headers['x-access-token'] || req.headers['authorization'] || ""
@@ -125,8 +225,6 @@ router.put("/:acronym", (req, res)=> {
     
     console.log(token)
 
-    // let secret='your-256-bit-secret'
-
     try{
         let decoded = jwt.decode(token, SUPER_SECRET);
         console.log(decoded); //=> { foo: 'bar' }    
@@ -136,7 +234,6 @@ router.put("/:acronym", (req, res)=> {
         return 
     }
     
-    //console.log('hello')
     if (body.acronym 
         && body.desc
         && body.desc.length>0) {
@@ -159,7 +256,31 @@ router.put("/:acronym", (req, res)=> {
 })
 
 // DELETE /acronym/:acronym`**
-// uses an authorization header to ensure acronyms are protected
+// 
+/**
+ * @swagger
+ * /v1/acronym/{acronym}:
+ *      delete:
+ *          tags:
+ *              - acronym
+ *          summary: Deletes an acrony in the database, It uses an authorization header to ensure acronyms are protected
+ *          produces:
+ *              - application/json
+ *          consumes:
+ *              - application/json
+ *          security:
+ *              - BearerAuth:
+ *                  type: http
+ *                  schema: bearer
+ *          parameters:
+ *              - in: header
+ *                name: authorization
+ *              - in: path
+ *                name: acronym
+ *          responses:
+ *              200:
+ *                  description: acronym es deleted
+ */
 router.delete("/:acronym", (req, res)=> {
     let params = req.params
     
